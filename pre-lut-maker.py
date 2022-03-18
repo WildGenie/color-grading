@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from matplotlib import pyplot as plt
 
-from sklearn.preprocessing import PolynomialFeatures   
+from sklearn.preprocessing import PolynomialFeatures
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -44,41 +44,40 @@ for x in range(3):
 			plt.subplot(3,3,j)
 			plt.plot(histr,color = col)
 			plt.xlim([0,256])
-			
 
-img2 = cv2.imread("Image2.png", 1)	
+
+img2 = cv2.imread("Image2.png", 1)
 img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
 img2 = img2.astype(np.float32, copy=False)
 tb=np.zeros(3)
 tm=np.zeros(3)
 tc=np.zeros(3)
 for rgb in range(3):
-	tb[rgb]=0
-	tm[rgb]=1
-	tt = 999
-	tc[rgb]=0
-	for cc in range(-10,50):
-		c=cc/3000.0
-		#print(cc)
-		for mm in range(1,40):
-			m = mm/10000.0
-			for b in range(-100,20):
-				delta = np.ravel(right)[rgb::3]-np.ravel(wrong*m+b+np.power(wrong,2)*c)[rgb::3]
-				#print(delta)
-				power = np.power(delta,2)
-				#print(power)
-				mean = np.mean(power)
-				#print(mean)
-				final = np.sqrt(mean)
-				if (final<tt):
-					tb[rgb] = b
-					tm[rgb] = m
-					tt = final
-					tc[rgb] = c
-				else:
-					continue
-				#print(final,m,b)
-	print("Best:",tt,"m:",tm[rgb],"b:",tb[rgb],"c:",tc[rgb])
+    tb[rgb]=0
+    tm[rgb]=1
+    tt = 999
+    tc[rgb]=0
+    for cc in range(-10,50):
+        c=cc/3000.0
+        		#print(cc)
+        for mm in range(1,40):
+            m = mm/10000.0
+            for b in range(-100,20):
+                delta = np.ravel(right)[rgb::3]-np.ravel(wrong*m+b+np.power(wrong,2)*c)[rgb::3]
+                #print(delta)
+                power = np.power(delta,2)
+                #print(power)
+                mean = np.mean(power)
+                #print(mean)
+                final = np.sqrt(mean)
+                if final >= tt:
+                    continue
+                tb[rgb] = b
+                tm[rgb] = m
+                tt = final
+                tc[rgb] = c
+            				#print(final,m,b)
+    print("Best:",tt,"m:",tm[rgb],"b:",tb[rgb],"c:",tc[rgb])
 
 #mb = np.min(tb)+np.min(img2)
 #print("min b",mb)
@@ -132,7 +131,7 @@ while(cap.isOpened()):
 
         for rgb in range(3):
             frame[:,:,rgb] = frame[:,:,rgb]*tm[rgb] + tb[rgb] + np.power(frame[:,:,rgb],2)*tc[rgb] - mb
-            
+
         frame+=35 ########## BRIGHTNESS
         print(".")
         ##########  TAPER OFF ENDS
